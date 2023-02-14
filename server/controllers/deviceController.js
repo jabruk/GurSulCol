@@ -16,7 +16,7 @@ exports.homepage = async(req, res) => {
     const mobile = await device.find({ 'category': 'Mobile' }).limit(limitNumber);
     const computer = await device.find({ 'category': 'Computer' }).limit(limitNumber);
 
-    const typeOfDevice = { computer, mobile};
+    const typeOfDevice = {latest , computer, mobile};
 
     res.render('index', { title: 'Cooking Blog - Home', categories, typeOfDevice } );
   } catch (error) {
