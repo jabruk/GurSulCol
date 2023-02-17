@@ -9,4 +9,4 @@ db.once('open', function(){
 
 // Models
 require('./Category');
-require('./device');
+require('./Device');

@@ -1,7 +1,7 @@
 require('../models/database');
 const Category = require('../models/Category');
-const device = require('../models/device');
-
+const Device = require('../models/Device');
+const device = require('../models/Device');
 
 
 /**
@@ -10,6 +10,8 @@ const device = require('../models/device');
 */
 exports.homepage = async(req, res) => {
   try {
+
+
     const limitNumber = 5;
     const categories = await Category.find({}).limit(limitNumber);
     const latest = await device.find({}).sort({_id: -1}).limit(limitNumber);
@@ -17,8 +19,7 @@ exports.homepage = async(req, res) => {
     const computer = await device.find({ 'category': 'Computer' }).limit(limitNumber);
 
     const typeOfDevice = {latest , computer, mobile};
-
-    res.render('index', { title: 'Cooking Blog - Home', categories, typeOfDevice } );
+    res.render('index', { title: 'ITSHOP - Home', categories, typeOfDevice } );
   } catch (error) {
     res.status(500).send({message: error.message || "Error Occured" });
   }
@@ -32,7 +33,7 @@ exports.exploreCategories = async(req, res) => {
   try {
     const limitNumber = 20;
     const categories = await Category.find({}).limit(limitNumber);
-    res.render('categories', { title: 'Cooking Blog - Categoreis', categories } );
+    res.render('categories', { title: 'ITSHOP - Categoreis', categories } );
   } catch (error) {
     res.status(500).send({message: error.message || "Error Occured" });
   }
@@ -48,7 +49,7 @@ exports.exploreCategoriesById = async(req, res) => {
     let categoryId = req.params.id;
     const limitNumber = 20;
     const categoryById = await device.find({ 'category': categoryId }).limit(limitNumber);
-    res.render('categories', { title: 'Cooking Blog - Categoreis', categoryById } );
+    res.render('categories', { title: 'ITSHOP - Categoreis', categoryById } );
   } catch (error) {
     res.status(500).send({message: error.message || "Error Occured" });
   }
@@ -61,8 +62,8 @@ exports.exploreCategoriesById = async(req, res) => {
 exports.exploredevice = async(req, res) => {
   try {
     let deviceId = req.params.id;
-    const device = await device.findById(deviceId);
-    res.render('device', { title: 'Cooking Blog - device', device } );
+    const device = await Device.findById(deviceId);
+    res.render('device', { title: 'ITSHOP - device', device} );
   } catch (error) {
     res.status(500).send({message: error.message || "Error Occured" });
   }
@@ -77,7 +78,7 @@ exports.searchdevice = async(req, res) => {
   try {
     let searchTerm = req.body.searchTerm;
     let device = await device.find( { $text: { $search: searchTerm, $diacriticSensitive: true } });
-    res.render('search', { title: 'Cooking Blog - Search', device } );
+    res.render('search', { title: 'ITSHOP - Search', device } );
   } catch (error) {
     res.status(500).send({message: error.message || "Error Occured" });
   }
@@ -92,7 +93,7 @@ exports.exploreLatest = async(req, response) => {
   try {
     const limitNumber = 20;
     const device = await device.find({}).sort({ _id: -1 }).limit(limitNumber);
-    res.render('explore-latest', { title: 'Cooking Blog - Explore Latest', device } );
+    res.render('explore-latest', { title: 'ITSHOP - Explore Latest', device } );
   } catch (error) {
     response.status(500).send({message: error.message || "Error Occured" });
   }
@@ -109,7 +110,7 @@ exports.exploreRandom = async(req, res) => {
     let count = await device.find().countDocuments();
     let random = Math.floor(Math.random() * count);
     let device = await device.findOne().skip(random).exec();
-    res.render('explore-random', { title: 'Cooking Blog - Explore Latest', device } );
+    res.render('explore-random', { title: 'ITSHOP - Explore Latest', device } );
   } catch (error) {
     res.status(500).send({message: error.message || "Error Occured" });
   }
@@ -123,7 +124,7 @@ exports.exploreRandom = async(req, res) => {
 exports.submitdevice = async(req, res) => {
   const infoErrorsObj = req.flash('infoErrors');
   const infoSubmitObj = req.flash('infoSubmit');
-  res.render('submit-device', { title: 'Cooking Blog - Submit device', infoErrorsObj, infoSubmitObj  } );
+  res.render('submit-device', { title: 'ITSHOP - Submit device', infoErrorsObj, infoSubmitObj  } );
 }
 
 /**
