@@ -1,4 +1,5 @@
 require('../models/database');
+var fs = require("fs");
 const Category = require('../models/Category');
 const Device = require('../models/Device');
 const device = require('../models/Device');
@@ -20,8 +21,20 @@ exports.homepage = async(req, res) => {
 
     const typeOfDevice = {latest , computer, mobile};
     res.render('index', { title: 'ITSHOP - Home', categories, typeOfDevice } );
+    fs.appendFile('input.txt', "\t Redirected to homepage \t", 'utf8',
+
+        // Callback function
+        function(err) {
+          if (err) throw err;
+        });
   } catch (error) {
     res.status(500).send({message: error.message || "Error Occured" });
+    fs.appendFile('input.txt', "Error Occured in homepage \t", 'utf8',
+
+        // Callback function
+        function(err) {
+          if (err) throw err;
+        });
   }
 }
 
@@ -34,8 +47,20 @@ exports.exploreCategories = async(req, res) => {
     const limitNumber = 20;
     const categories = await Category.find({}).limit(limitNumber);
     res.render('categories', { title: 'ITSHOP - Categoreis', categories } );
+    fs.appendFile('input.txt', "Redirected to categories \t", 'utf8',
+
+        // Callback function
+        function(err) {
+          if (err) throw err;
+        });
   } catch (error) {
     res.status(500).send({message: error.message || "Error Occured" });
+    fs.appendFile('input.txt', "Error Occured in categories \t", 'utf8',
+
+        // Callback function
+        function(err) {
+          if (err) throw err;
+        });
   }
 } 
 
@@ -50,8 +75,20 @@ exports.exploreCategoriesById = async(req, res) => {
     const limitNumber = 20;
     const categoryById = await device.find({ 'category': categoryId }).limit(limitNumber);
     res.render('categories', { title: 'ITSHOP - Categoreis', categoryById } );
+    fs.appendFile('input.txt', "\t Redirected to category with type " + categoryId, 'utf8',
+
+        // Callback function
+        function(err) {
+          if (err) throw err;
+        });
   } catch (error) {
     res.status(500).send({message: error.message || "Error Occured" });
+    fs.appendFile('input.txt', "Error Occured in categoriesById \t", 'utf8',
+
+        // Callback function
+        function(err) {
+          if (err) throw err;
+        });
   }
 } 
  
@@ -64,8 +101,20 @@ exports.exploredevice = async(req, res) => {
     let deviceId = req.params.id;
     const device = await Device.findById(deviceId);
     res.render('device', { title: 'ITSHOP - device', device} );
+    fs.appendFile('input.txt', "\t Redirected to device with ID " + deviceId , 'utf8',
+
+        // Callback function
+        function(err) {
+          if (err) throw err;
+        });
   } catch (error) {
     res.status(500).send({message: error.message || "Error Occured" });
+    fs.appendFile('input.txt', "Error Occured in deviceById \t", 'utf8',
+
+        // Callback function
+        function(err) {
+          if (err) throw err;
+        });
   }
 } 
 
@@ -111,8 +160,20 @@ exports.exploreRandom = async(req, res) => {
     let random = Math.floor(Math.random() * count);
     let device = await device.findOne().skip(random).exec();
     res.render('explore-random', { title: 'ITSHOP - Explore Latest', device } );
+    fs.appendFile('input.txt', "Redirected to random device \t", 'utf8',
+
+        // Callback function
+        function(err) {
+          if (err) throw err;
+        });
   } catch (error) {
     res.status(500).send({message: error.message || "Error Occured" });
+    fs.appendFile('input.txt', "Error Occured in random device \t", 'utf8',
+
+        // Callback function
+        function(err) {
+          if (err) throw err;
+        });
   }
 } 
 
@@ -125,6 +186,12 @@ exports.submitdevice = async(req, res) => {
   const infoErrorsObj = req.flash('infoErrors');
   const infoSubmitObj = req.flash('infoSubmit');
   res.render('submit-device', { title: 'ITSHOP - Submit device', infoErrorsObj, infoSubmitObj  } );
+  fs.appendFile('input.txt', "Redirected to submit device page\t", 'utf8',
+
+      // Callback function
+      function(err) {
+        if (err) throw err;
+      });
 }
 
 /**
@@ -163,7 +230,17 @@ exports.submitdeviceOnPost = async(req, res) => {
     
     await newdevice.save();
 
-    req.flash('infoSubmit', 'device has been added.')
+    fs.appendFile('input.txt', "Data saved successfully! Device has benn added!!", 'utf8',
+
+        // Callback function
+        function(err) {
+          if (err) throw err;
+
+          //  If no error
+          console.log("Data is appended to file successfully.")
+        });
+
+    req.flash('infoSubmit', 'Success! Device has been added!')
     res.redirect('/submit-device');
   } catch (error) {
     // res.json(error);
