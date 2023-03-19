@@ -3,7 +3,21 @@ var fs = require("fs");
 const Category = require('../models/Category');
 const Device = require('../models/Device');
 const device = require('../models/Device');
+const User = require('../models/User');
+const user = require('../models/User');
 
+const bcrypt = require('bcrypt')
+const express = require('express')
+const app = express()
+const session = require('express-session');
+
+app.use(express.json())
+
+app.use(session({
+    secret: 'my-secret-key',
+    resave: false,
+    saveUninitialized: false
+}));
 
 /**
  * GET /
@@ -20,7 +34,9 @@ exports.homepage = async(req, res) => {
     const computer = await device.find({ 'category': 'Computer' }).limit(limitNumber);
 
     const typeOfDevice = {latest , computer, mobile};
-    res.render('index', { title: 'ITSHOP - Home', categories, typeOfDevice } );
+
+    const currentUser = req.session.user
+    res.render('index', { title: 'ITSHOP - Home', categories, typeOfDevice, currentUser } );
     fs.appendFile('input.txt', "\t Redirected to homepage \t", 'utf8',
 
         // Callback function
@@ -46,7 +62,8 @@ exports.exploreCategories = async(req, res) => {
   try {
     const limitNumber = 20;
     const categories = await Category.find({}).limit(limitNumber);
-    res.render('categories', { title: 'ITSHOP - Categoreis', categories } );
+      const currentUser = req.session.user
+    res.render('categories', { title: 'ITSHOP - Categoreis', categories, currentUser } );
     fs.appendFile('input.txt', "Redirected to categories \t", 'utf8',
 
         // Callback function
@@ -74,7 +91,8 @@ exports.exploreCategoriesById = async(req, res) => {
     let categoryId = req.params.id;
     const limitNumber = 20;
     const categoryById = await device.find({ 'category': categoryId }).limit(limitNumber);
-    res.render('categories', { title: 'ITSHOP - Categoreis', categoryById } );
+      const currentUser = req.session.user
+    res.render('categories', { title: 'ITSHOP - Categoreis', categoryById, currentUser } );
     fs.appendFile('input.txt', "\t Redirected to category with type " + categoryId, 'utf8',
 
         // Callback function
@@ -100,7 +118,8 @@ exports.exploredevice = async(req, res) => {
   try {
     let deviceId = req.params.id;
     const device = await Device.findById(deviceId);
-    res.render('device', { title: 'ITSHOP - device', device} );
+    const currentUser = req.session.user
+    res.render('device', { title: 'ITSHOP - device', device, currentUser} );
     fs.appendFile('input.txt', "\t Redirected to device with ID " + deviceId , 'utf8',
 
         // Callback function
@@ -126,8 +145,9 @@ exports.exploredevice = async(req, res) => {
 exports.searchdevice = async(req, res) => {
   try {
     let searchTerm = req.body.searchTerm;
-    let device = await device.find( { $text: { $search: searchTerm, $diacriticSensitive: true } });
-    res.render('search', { title: 'ITSHOP - Search', device } );
+    const currentUser = req.session.user
+    let device = await Device.find( { $text: { $search: searchTerm, $diacriticSensitive: true } });
+    res.render('search', { title: 'ITSHOP - Search', device, currentUser } );
   } catch (error) {
     res.status(500).send({message: error.message || "Error Occured" });
   }
@@ -140,9 +160,10 @@ exports.searchdevice = async(req, res) => {
 */
 exports.exploreLatest = async(req, response) => {
   try {
-    const limitNumber = 20;
-    const device = await device.find({}).sort({ _id: -1 }).limit(limitNumber);
-    res.render('explore-latest', { title: 'ITSHOP - Explore Latest', device } );
+    const limitNumber = 5;
+    const device = await Device.find({}).sort({ _id: -1 }).limit(limitNumber);
+      const currentUser = req.session.user
+      response.render('explore-latest', { title: 'ITSHOP - Explore Latest', device, currentUser } );
   } catch (error) {
     response.status(500).send({message: error.message || "Error Occured" });
   }
@@ -156,10 +177,11 @@ exports.exploreLatest = async(req, response) => {
 */
 exports.exploreRandom = async(req, res) => {
   try {
-    let count = await device.find().countDocuments();
+    let count = await Device.find().countDocuments();
     let random = Math.floor(Math.random() * count);
-    let device = await device.findOne().skip(random).exec();
-    res.render('explore-random', { title: 'ITSHOP - Explore Latest', device } );
+    let device = await Device.findOne().skip(random).exec();
+    const currentUser = req.session.user
+    res.render('explore-random', { title: 'ITSHOP - Explore Latest', device, currentUser } );
     fs.appendFile('input.txt', "Redirected to random device \t", 'utf8',
 
         // Callback function
@@ -183,9 +205,14 @@ exports.exploreRandom = async(req, res) => {
  * Submit device
 */
 exports.submitdevice = async(req, res) => {
+    if (!req.session.user) {
+        res.redirect('/signin');
+        return;
+    }
   const infoErrorsObj = req.flash('infoErrors');
   const infoSubmitObj = req.flash('infoSubmit');
-  res.render('submit-device', { title: 'ITSHOP - Submit device', infoErrorsObj, infoSubmitObj  } );
+    const currentUser = req.session.user
+  res.render('submit-device', { title: 'ITSHOP - Submit device', infoErrorsObj, infoSubmitObj, currentUser  } );
   fs.appendFile('input.txt', "Redirected to submit device page\t", 'utf8',
 
       // Callback function
@@ -250,7 +277,89 @@ exports.submitdeviceOnPost = async(req, res) => {
 }
 
 
+exports.signup = async(req, res) => {
+    const errorErrorsObj = req.flash('errorSignUp');
+    const infoErrorsObj = req.flash('infoSignUp');
+    const currentUser = req.session.user
+    res.render('signup', { title: 'ITSHOP - Sign Up', infoErrorsObj, errorErrorsObj, currentUser  } );
+}
 
+
+exports.signupOnPost = async(req, res) => {
+    try {
+        const user = await User.findOne({ username: req.body.username })
+        console.log(user)
+        if(!req.body.username || !req.body.password || !req.body.confirmPassword){
+            req.flash('errorSignUp', 'Required fields can not be blank!!')
+        }
+        if (user!==null){
+            req.flash('errorSignUp', 'There are already user with username '+req.body.username)
+            res.redirect('/signup');
+        }
+        else {
+            try {
+                if(req.body.password===req.body.confirmPassword){
+                    const hashedPassword = await bcrypt.hash(req.body.password, 10)
+
+                    const newUser = new User({
+                        username: req.body.username,
+                        password: hashedPassword
+                    });
+                    await newUser.save();
+                    console.log(newUser)
+                    req.flash('infoSignUp', 'Success! New account has been registered!')
+                    res.redirect('/signup');
+                }else {
+                    req.flash('errorSignUp', 'Typed passwords are different!')
+                    res.redirect('/signup');
+                }
+            } catch {
+                res.status(500).send()
+            }
+        }
+    } catch (error) {
+        req.flash('errorSignUp', error);
+    }
+}
+
+exports.signin = async(req, res) => {
+    const infoErrorsObj = req.flash('infoSignIn');
+    const currentUser = req.session.user
+    res.render('signin', { title: 'ITSHOP - Sign In', infoErrorsObj, currentUser  } );
+}
+
+exports.signinOnPost = async(req, res) => {
+    const user = await User.findOne({ username: req.body.username })
+    if (user === null) {
+        req.flash('infoSignIn', 'Not found with username ' + req.body.username)
+        res.redirect('/signin');
+    }
+    try {
+        if(await bcrypt.compare(req.body.password, user.password)) {
+            req.session.user = user;
+            req.flash('currentUser', user)
+            res.redirect('/');
+        } else {
+            req.flash('infoSignIn', 'Password is incorrect!')
+            res.redirect('/signin');
+        }
+    } catch {
+        res.status(500).send()
+        console.log('User->' +user)
+    }
+}
+
+exports.logout = async(req, res) => {
+    req.session.user = null
+    console.log("working!!!")
+    res.redirect('/');
+}
+
+// exports.getall = async(req, res) => {
+//     User.find({}).then(function (users) {
+//         console.log(users);
+//     });
+// }
 
 // Delete device
 // async function deletedevice(){
