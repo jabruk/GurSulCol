@@ -1,0 +1,35 @@
+<div style="display: flex; justify-content: space-between; align-items: center">
+    <h1 class="pb-4" style="margin: 0">Cart</h1>
+    <form action="/clearCart" method="POST">
+            <button type="submit" style="margin: 0" class="btn btn-outline-secondary"><i class="bi bi-trash"></i></button>
+    </form>
+</div>
+
+<div class="row row-cols-2 row-cols-lg-5 g-2 g-lg-3">
+  <% if(cartItems != '') { %>
+    <% cartItems.forEach(function(cartItems, index){ %>
+        <div class="cat__link">
+    <a href="/device/<%= cartItems._id %>" class="col text-center cat__link">
+      <div class="category__img category__img--large shadow">
+        <img src="/uploads/<%= cartItems.image %>" alt="<%= cartItems.name %>" loading="lazy">
+      </div>
+      <div class="pt-1"><%= cartItems.name %></div>
+    </a>
+    <div class="quantity">
+        <form action="/decrease" method="POST">
+            <input type="hidden" name="_id" value="<%= cartItems._id %>">
+            <button type="submit" class="btn btn-outline-secondary">-</button>
+        </form>
+        <input class="input-quantity" type="text" value="<%= cartItems.quantity %>">
+        <form action="/increase" method="POST">
+            <input type="hidden" name="_id" value="<%= cartItems._id %>">
+            <button type="submit" class="btn btn-outline-secondary">+</button>
+        </form>
+    </div>
+  </div>
+    <% }) %>
+  <% } else { %>
+    <p>No items found.</p>
+  <% } %>
+
+</div>

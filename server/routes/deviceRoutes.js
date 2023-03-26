@@ -19,6 +19,11 @@ router.post('/signup', deviceController.signupOnPost);
 router.get('/signin', deviceController.signin);
 router.post('/signin', deviceController.signinOnPost);
 router.get('/logout', deviceController.logout);
+router.get('/cart', deviceController.cart);
+router.post('/cart', deviceController.cartOnPost);
+router.post('/clearCart', deviceController.clearCart);
+router.post('/decrease', deviceController.decrease);
+router.post('/increase', deviceController.increase);
 // router.get('/getall', deviceController.getall);
 
  

@@ -29,6 +29,16 @@
       
     </div>
   </div>
+
+<form action="/cart" method="POST">
+      <input type="hidden" name="_id" value="<%= device._id %>">
+      <input type="hidden" name="name" value="<%= device.name %>">
+      <input type="hidden" name="description" value="<%= device.description %>">
+      <input type="hidden" name="price" value="<%= device.price %>">
+      <input type="hidden" name="category" value="<%= device.category %>">
+      <input type="hidden" name="image" value="<%= device.image %>">
+    <button type="submit" class="btn btn-primary">Add to Cart</button>
+</form>
 <% } else { %>
   <p>No item found.</p>
 <% } %>

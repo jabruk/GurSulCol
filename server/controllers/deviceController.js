@@ -10,6 +10,8 @@ const bcrypt = require('bcrypt')
 const express = require('express')
 const app = express()
 const session = require('express-session');
+const {LocalStorage} = require('node-localstorage');
+const localStorage = new LocalStorage('./scratch');
 
 app.use(express.json())
 
@@ -36,7 +38,9 @@ exports.homepage = async(req, res) => {
     const typeOfDevice = {latest , computer, mobile};
 
     const currentUser = req.session.user
-    res.render('index', { title: 'ITSHOP - Home', categories, typeOfDevice, currentUser } );
+    const cartItems = JSON.parse(localStorage.getItem("cartItems"))
+    var countCartItems = Object.keys(cartItems).length;
+    res.render('index', { title: 'ITSHOP - Home', categories, typeOfDevice, currentUser, countCartItems } );
     fs.appendFile('input.txt', "\t Redirected to homepage \t", 'utf8',
 
         // Callback function
@@ -63,7 +67,9 @@ exports.exploreCategories = async(req, res) => {
     const limitNumber = 20;
     const categories = await Category.find({}).limit(limitNumber);
       const currentUser = req.session.user
-    res.render('categories', { title: 'ITSHOP - Categoreis', categories, currentUser } );
+      const cartItems = JSON.parse(localStorage.getItem("cartItems"))
+      var countCartItems = Object.keys(cartItems).length;
+    res.render('categories', { title: 'ITSHOP - Categoreis', categories, currentUser, countCartItems } );
     fs.appendFile('input.txt', "Redirected to categories \t", 'utf8',
 
         // Callback function
@@ -92,7 +98,9 @@ exports.exploreCategoriesById = async(req, res) => {
     const limitNumber = 20;
     const categoryById = await device.find({ 'category': categoryId }).limit(limitNumber);
       const currentUser = req.session.user
-    res.render('categories', { title: 'ITSHOP - Categoreis', categoryById, currentUser } );
+      const cartItems = JSON.parse(localStorage.getItem("cartItems"))
+      var countCartItems = Object.keys(cartItems).length;
+    res.render('categories', { title: 'ITSHOP - Categoreis', categoryById, currentUser, countCartItems } );
     fs.appendFile('input.txt', "\t Redirected to category with type " + categoryId, 'utf8',
 
         // Callback function
@@ -119,7 +127,9 @@ exports.exploredevice = async(req, res) => {
     let deviceId = req.params.id;
     const device = await Device.findById(deviceId);
     const currentUser = req.session.user
-    res.render('device', { title: 'ITSHOP - device', device, currentUser} );
+      const cartItems = JSON.parse(localStorage.getItem("cartItems"))
+      var countCartItems = Object.keys(cartItems).length;
+    res.render('device', { title: 'ITSHOP - device', device, currentUser, countCartItems } );
     fs.appendFile('input.txt', "\t Redirected to device with ID " + deviceId , 'utf8',
 
         // Callback function
@@ -146,8 +156,10 @@ exports.searchdevice = async(req, res) => {
   try {
     let searchTerm = req.body.searchTerm;
     const currentUser = req.session.user
+      const cartItems = JSON.parse(localStorage.getItem("cartItems"))
+      var countCartItems = Object.keys(cartItems).length;
     let device = await Device.find( { $text: { $search: searchTerm, $diacriticSensitive: true } });
-    res.render('search', { title: 'ITSHOP - Search', device, currentUser } );
+    res.render('search', { title: 'ITSHOP - Search', device, currentUser, countCartItems } );
   } catch (error) {
     res.status(500).send({message: error.message || "Error Occured" });
   }
@@ -162,8 +174,11 @@ exports.exploreLatest = async(req, response) => {
   try {
     const limitNumber = 5;
     const device = await Device.find({}).sort({ _id: -1 }).limit(limitNumber);
+    console.log(device)
       const currentUser = req.session.user
-      response.render('explore-latest', { title: 'ITSHOP - Explore Latest', device, currentUser } );
+      const cartItems = JSON.parse(localStorage.getItem("cartItems"))
+      var countCartItems = Object.keys(cartItems).length;
+      response.render('explore-latest', { title: 'ITSHOP - Explore Latest', device, currentUser, countCartItems } );
   } catch (error) {
     response.status(500).send({message: error.message || "Error Occured" });
   }
@@ -181,7 +196,9 @@ exports.exploreRandom = async(req, res) => {
     let random = Math.floor(Math.random() * count);
     let device = await Device.findOne().skip(random).exec();
     const currentUser = req.session.user
-    res.render('explore-random', { title: 'ITSHOP - Explore Latest', device, currentUser } );
+      const cartItems = JSON.parse(localStorage.getItem("cartItems"))
+      var countCartItems = Object.keys(cartItems).length;
+    res.render('explore-random', { title: 'ITSHOP - Explore Latest', device, currentUser, countCartItems } );
     fs.appendFile('input.txt', "Redirected to random device \t", 'utf8',
 
         // Callback function
@@ -212,7 +229,9 @@ exports.submitdevice = async(req, res) => {
   const infoErrorsObj = req.flash('infoErrors');
   const infoSubmitObj = req.flash('infoSubmit');
     const currentUser = req.session.user
-  res.render('submit-device', { title: 'ITSHOP - Submit device', infoErrorsObj, infoSubmitObj, currentUser  } );
+    const cartItems = JSON.parse(localStorage.getItem("cartItems"))
+    var countCartItems = Object.keys(cartItems).length;
+  res.render('submit-device', { title: 'ITSHOP - Submit device', infoErrorsObj, infoSubmitObj, currentUser, countCartItems  } );
   fs.appendFile('input.txt', "Redirected to submit device page\t", 'utf8',
 
       // Callback function
@@ -281,7 +300,9 @@ exports.signup = async(req, res) => {
     const errorErrorsObj = req.flash('errorSignUp');
     const infoErrorsObj = req.flash('infoSignUp');
     const currentUser = req.session.user
-    res.render('signup', { title: 'ITSHOP - Sign Up', infoErrorsObj, errorErrorsObj, currentUser  } );
+    const cartItems = JSON.parse(localStorage.getItem("cartItems"))
+    var countCartItems = Object.keys(cartItems).length;
+    res.render('signup', { title: 'ITSHOP - Sign Up', infoErrorsObj, errorErrorsObj, currentUser, countCartItems  } );
 }
 
 
@@ -325,7 +346,9 @@ exports.signupOnPost = async(req, res) => {
 exports.signin = async(req, res) => {
     const infoErrorsObj = req.flash('infoSignIn');
     const currentUser = req.session.user
-    res.render('signin', { title: 'ITSHOP - Sign In', infoErrorsObj, currentUser  } );
+    const cartItems = JSON.parse(localStorage.getItem("cartItems"))
+    var countCartItems = Object.keys(cartItems).length;
+    res.render('signin', { title: 'ITSHOP - Sign In', infoErrorsObj, currentUser, countCartItems  } );
 }
 
 exports.signinOnPost = async(req, res) => {
@@ -355,6 +378,80 @@ exports.logout = async(req, res) => {
     res.redirect('/');
 }
 
+exports.cart = async(req, res) => {
+    const currentUser = req.session.user
+    const cartItems = JSON.parse(localStorage.getItem("cartItems"))
+    var countCartItems = Object.keys(cartItems).length;
+    res.render('cart', { title: 'ITSHOP - Cart', currentUser, cartItems, countCartItems  } );
+}
+
+exports.cartOnPost = async(req, res) => {
+    const device = {
+        _id: req.body._id,
+        name: req.body.name,
+        description: req.body.description,
+        price: req.body.price,
+        category: req.body.category,
+        image: req.body.image,
+        quantity: 1
+    };
+
+    let cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
+
+    const existingItem = cartItems.find(item => item.name === device.name);
+    if (existingItem) {
+        existingItem.quantity += device.quantity;
+    } else {
+        cartItems.push(device);
+    }
+
+    localStorage.setItem("cartItems", JSON.stringify(cartItems));
+    console.log(localStorage.getItem("cartItems"))
+    console.log('Device-> '+device)
+    res.redirect('/device/'+ device._id);
+}
+
+exports.clearCart = async(req, res) => {
+    let cartItems =  [];
+
+    localStorage.setItem("cartItems", JSON.stringify(cartItems));
+    console.log(localStorage.getItem("cartItems"))
+    res.redirect('/cart');
+}
+
+exports.decrease = async(req, res) => {
+    const cartItems = JSON.parse(localStorage.getItem("cartItems"));
+    const itemIdToModify = req.body._id;
+    const itemToModify = cartItems.find(item => item._id === itemIdToModify);
+    if (itemToModify) {
+        if(itemToModify.quantity >= 2){
+            itemToModify.quantity -= 1;
+            localStorage.setItem("cartItems", JSON.stringify(cartItems));
+            console.log(`Item quantity updated: ${itemToModify.name}, new quantity: ${itemToModify.quantity}`);
+        } else if (itemToModify.quantity === 1) {
+            const newCartItems = cartItems.filter(item => item._id !== itemIdToModify);
+            localStorage.setItem("cartItems", JSON.stringify(newCartItems));
+            console.log(`Item with ID ${itemIdToModify} removed from cart`);
+        }
+    } else {
+        console.log(`Item with ID ${itemIdToModify} not found in cart`);
+    }
+    res.redirect('/cart');
+}
+
+exports.increase = async(req, res) => {
+    const cartItems = JSON.parse(localStorage.getItem("cartItems"));
+    const itemIdToModify = req.body._id;
+    const itemToModify = cartItems.find(item => item._id === itemIdToModify);
+    if (itemToModify) {
+        itemToModify.quantity += 1;
+        localStorage.setItem("cartItems", JSON.stringify(cartItems));
+        console.log(`Item quantity updated: ${itemToModify.name}, new quantity: ${itemToModify.quantity}`);
+    } else {
+        console.log(`Item with ID ${itemIdToModify} not found in cart`);
+    }
+    res.redirect('/cart');
+}
 // exports.getall = async(req, res) => {
 //     User.find({}).then(function (users) {
 //         console.log(users);
