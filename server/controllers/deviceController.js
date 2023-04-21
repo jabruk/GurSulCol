@@ -226,9 +226,14 @@ exports.submitdevice = async(req, res) => {
         res.redirect('/signin');
         return;
     }
+    if(req.session.user.role==='user'){
+        res.redirect('/');
+        return;
+    }
   const infoErrorsObj = req.flash('infoErrors');
   const infoSubmitObj = req.flash('infoSubmit');
     const currentUser = req.session.user
+    console.log(currentUser)
     const cartItems = JSON.parse(localStorage.getItem("cartItems"))
     var countCartItems = Object.keys(cartItems).length;
   res.render('submit-device', { title: 'ITSHOP - Submit device', infoErrorsObj, infoSubmitObj, currentUser, countCartItems  } );
@@ -324,7 +329,8 @@ exports.signupOnPost = async(req, res) => {
 
                     const newUser = new User({
                         username: req.body.username,
-                        password: hashedPassword
+                        password: hashedPassword,
+                        role: 'user'
                     });
                     await newUser.save();
                     console.log(newUser)
@@ -452,6 +458,19 @@ exports.increase = async(req, res) => {
     }
     res.redirect('/cart');
 }
+
+exports.cabinet = async(req, res) => {
+    if (!req.session.user) {
+        res.redirect('/signin');
+        return;
+    }
+    const infoErrorsObj = req.flash('infoSignIn');
+    const currentUser = req.session.user
+    const cartItems = JSON.parse(localStorage.getItem("cartItems"))
+    var countCartItems = Object.keys(cartItems).length;
+    res.render('cabinet', { title: 'ITSHOP - Cabinet', infoErrorsObj, currentUser, countCartItems  } );
+}
+
 // exports.getall = async(req, res) => {
 //     User.find({}).then(function (users) {
 //         console.log(users);

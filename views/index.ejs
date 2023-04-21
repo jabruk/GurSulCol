@@ -130,15 +130,27 @@
 
 
 <!-- Submit - Start -->
-<section class="px-4 py-5 my-5 text-center">
+<% if (currentUser) { %>
+<section id="submit-section" class="px-4 py-5 my-5 text-center">
   <img src="/img/public-laptop.png" class="d-block mx-auto mb-4 img-fluid" alt="Publish your device for FREE today" width="366" height="108" loading="lazy">
   <h1 class="display-5 fw-bold">Add the device</h1>
   <div class="col-lg-6 mx-auto">
     <p class="lead mb-4">Publish your device</p>
     <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-      <a href="/submit-device" class="btn btn-primary btn-dark btn-lg">Submit device</a>
+      <a href="<%= currentUser.role==='admin' ? '/submit-device' : '#submit-section' %>" class="btn btn-primary btn-dark btn-lg" onclick="<%= currentUser.role==='user' ? 'showNotification()' : '' %>">Submit device</a>
     </div>
   </div>
 </section>
- 
+<% } %>
+
+
+<script>
+  function showNotification() {
+    toastr.error('Client have no permission to submit', 'Error Message', {
+      positionClass: 'toast-top-right',
+      closeButton: true
+    });
+  }
+</script>
+
 <!-- Submit - End -->
