@@ -464,11 +464,45 @@ exports.cabinet = async(req, res) => {
         res.redirect('/signin');
         return;
     }
-    const infoErrorsObj = req.flash('infoSignIn');
+    const infoErrorsObj = req.flash('infoErrorsObj');
+    const infoObj = req.flash('infoObj');
     const currentUser = req.session.user
     const cartItems = JSON.parse(localStorage.getItem("cartItems"))
     var countCartItems = Object.keys(cartItems).length;
-    res.render('cabinet', { title: 'ITSHOP - Cabinet', infoErrorsObj, currentUser, countCartItems  } );
+    res.render('cabinet', { title: 'ITSHOP - Cabinet', infoErrorsObj, infoObj, currentUser, countCartItems  } );
+}
+
+exports.cabinetOnPost = async(req, res) => {
+    try {
+
+        const user = await User.findOne({ username: req.body.username })
+        console.log(user)
+        if(await bcrypt.compare(req.body.prev, user.password)){
+        if(req.body.new===req.body.confirm){
+            const newHashedPassword = await bcrypt.hash(req.body.new, 10)
+
+            User.findOneAndUpdate({ username: user.username }, { password: newHashedPassword }, { new: true })
+                .then(updatedUser => {
+                    console.log(`Updated user: ${updatedUser}`);
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+            req.flash('infoObj', 'Success! Password has been updated!')
+            res.redirect('/cabinet');
+        }else{
+            req.flash('infoErrorsObj', 'Two passwords are different!')
+            res.redirect('/cabinet');
+        }
+    }else {
+            req.flash('infoErrorsObj', 'Old password are different!')
+            res.redirect('/cabinet');
+        }
+    } catch (error) {
+        req.flash('infoErrorsObj', error);
+        console.log(error)
+        res.redirect('/');
+    }
 }
 
 // exports.getall = async(req, res) => {

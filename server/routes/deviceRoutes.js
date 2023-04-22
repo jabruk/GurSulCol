@@ -25,7 +25,7 @@ router.post('/clearCart', deviceController.clearCart);
 router.post('/decrease', deviceController.decrease);
 router.post('/increase', deviceController.increase);
 router.get('/cabinet', deviceController.cabinet);
-// router.post('/cabinet', deviceController.cabinetOnPost);
+router.post('/cabinet', deviceController.cabinetOnPost);
 // router.get('/getall', deviceController.getall);
 
  
