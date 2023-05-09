@@ -143,14 +143,33 @@
 </section>
 <% } %>
 
+  <script>
+    // function initMap() {
+    //     let map;
+    //     let opt = { 
+    //         centerr: {lat: 43.235238, lng: 76.909626}, 
+    //         zoom:15
+    //     }
+    //     map = new google.maps.Map(document.getElementById("map"),opt );
+    // }
 
-<script>
-  function showNotification() {
-    toastr.error('Client have no permission to submit', 'Error Message', {
-      positionClass: 'toast-top-right',
-      closeButton: true
-    });
-  }
-</script>
+    let map;
+
+    async function initMap() {
+      const { Map } = await google.maps.importLibrary("maps");
+      map = new Map(document.getElementById("map"), {
+        center: {lat: 43.235238, lng: 76.909626},
+        zoom: 15,
+      });
+    }
+
+    initMap();
+  </script>
+  <script async
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBxbhW07A_Y5RuWIYby7WNWANRx1-uDZDI&callback=initMap" async defer> 
+  google.maps.event.addDomListener(window, "load", initialize);
+  </script>
 
 <!-- Submit - End -->
+<div id="map"></div>
+
