@@ -4,8 +4,16 @@
   </div>
 
   <div class="col-12 col-lg-6">
-    <h1 class="display-5 fw-bold mb-3">Huge selection of delicios device ideas</h1>
-    <p class="lead">
+    <h1 class="display-5 fw-bold mb-3"
+        data-aos="zoom-out"
+        data-aos-delay="150"
+        data-aos-duration="1000"
+        data-aos-once="true">Huge selection of delicios device ideas</h1>
+    <p class="lead"
+       data-aos="flip-up"
+       data-aos-delay="150"
+       data-aos-duration="1000"
+       data-aos-once="true">
       Explore our huge selection of delicious device ideas including; easy desserts, delicious vegan and vegetarian dinner ideas, gorgeous pasta devices, quick bakes, family-friendly meals and gluten-free devices.
     </p>
 
@@ -56,8 +64,11 @@
     <a href="/explore-latest" class="ms-auto">View More</a>
   </div>
 
-  <div class="row row-cols-2 row-cols-lg-5 g-2 g-lg-3">
-
+  <div class="row row-cols-2 row-cols-lg-5 g-2 g-lg-3"
+       data-aos="slide-left"
+       data-aos-delay="150"
+       data-aos-duration="1000"
+       data-aos-once="true">
     <% if(typeOfDevice !== 'undefined' && typeOfDevice.mobile.length > 0) { %>
       <% typeOfDevice.latest.forEach(function(device, index){ %>
       <a href="/device/<%= device._id %>" class="col text-center category__link">
@@ -78,11 +89,15 @@
 <!-- Thai Start -->
 <section class="pb-4 pt-4">
   <div class="d-flex mb-2 align-items-center">
-    <h2>Phones</h2>
+    <h2 data-aos="fade-in">Phones</h2>
     <a href="/categories/Thai" class="ms-auto">View More</a>
   </div>
 
-  <div class="row row-cols-2 row-cols-lg-5 g-2 g-lg-3">
+  <div class="row row-cols-2 row-cols-lg-5 g-2 g-lg-3"
+       data-aos="slide-left"
+       data-aos-delay="150"
+       data-aos-duration="1000"
+       data-aos-once="true">
     <% if( typeOfDevice.mobile !== 'undefined' && typeOfDevice.mobile.length > 0) { %>
       <% typeOfDevice.mobile.forEach(function(device, index){ %>
       <a href="/device/<%= device._id %>" class="col text-center category__link">
@@ -106,7 +121,11 @@
     <a href="/categories/American" class="ms-auto">View More</a>
   </div>
 
-  <div class="row row-cols-2 row-cols-lg-5 g-2 g-lg-3">
+  <div class="row row-cols-2 row-cols-lg-5 g-2 g-lg-3"
+       data-aos="slide-left"
+       data-aos-delay="150"
+       data-aos-duration="1000"
+       data-aos-once="true">
     <% if(typeOfDevice.computer != '') { %>
       <% typeOfDevice.computer.forEach(function(device, index){ %>
       <a href="/device/<%= device._id %>" class="col text-center category__link">

@@ -1,3 +1,8 @@
+import AOS from 'aos';
+import 'aos/dist/aos.css';
+
+AOS.init();
+
 let addIngredientsBtn = document.getElementById('addIngredientsBtn');
 let ingredientList = document.querySelector('.ingredientList');
 let ingredeintDiv = document.querySelectorAll('.ingredeintDiv')[0];
