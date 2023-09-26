@@ -162,32 +162,66 @@
 </section>
 <% } %>
 
-  <script>
-    // function initMap() {
-    //     let map;
-    //     let opt = { 
-    //         centerr: {lat: 43.235238, lng: 76.909626}, 
-    //         zoom:15
-    //     }
-    //     map = new google.maps.Map(document.getElementById("map"),opt );
-    // }
+<script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU&amp;apikey=2d2dd477-1869-4bfd-92e3-062c5753e7c2" type="text/javascript"></script>
+<script src="icon_customImage.js" type="text/javascript"></script>
+<script>
 
-    let map;
+  ymaps.ready(function () {
+    var myMap = new ymaps.Map('map', {
+              center: [43.235185567448035, 76.90976903815769],
+              zoom: 18
+            }, {
+              searchControlProvider: 'yandex#search'
+            }),
 
-    async function initMap() {
-      const { Map } = await google.maps.importLibrary("maps");
-      map = new Map(document.getElementById("map"), {
-        center: {lat: 43.235238, lng: 76.909626},
-        zoom: 15,
-      });
-    }
+            // Создаём макет содержимого.
+            MyIconContentLayout = ymaps.templateLayoutFactory.createClass(
+                    '<div style="color: #FFFFFF; font-weight: bold;">$[properties.iconContent]</div>'
+            ),
 
-    initMap();
-  </script>
-  <script async
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBxbhW07A_Y5RuWIYby7WNWANRx1-uDZDI&callback=initMap" async defer> 
-  google.maps.event.addDomListener(window, "load", initialize);
-  </script>
+            myPlacemark = new ymaps.Placemark(myMap.getCenter(), {
+              hintContent: 'Собственный значок метки',
+              balloonContent: 'Это красивая метка'
+            }, {
+              // Опции.
+              // Необходимо указать данный тип макета.
+              iconLayout: 'default#image',
+              // Своё изображение иконки метки.
+              iconImageHref: 'images/myIcon.gif',
+              // Размеры метки.
+              iconImageSize: [30, 42],
+              // Смещение левого верхнего угла иконки относительно
+              // её "ножки" (точки привязки).
+              iconImageOffset: [-5, -38]
+            }),
+
+            myPlacemarkWithContent = new ymaps.Placemark([43.235185567448035, 76.90976903815769], {
+              hintContent: 'Собственный значок метки с контентом',
+              balloonContent: 'А эта — новогодняя',
+              iconContent: '12'
+            }, {
+              // Опции.
+              // Необходимо указать данный тип макета.
+              iconLayout: 'default#imageWithContent',
+              // Своё изображение иконки метки.
+              iconImageHref: 'images/ball.png',
+              // Размеры метки.
+              iconImageSize: [48, 48],
+              // Смещение левого верхнего угла иконки относительно
+              // её "ножки" (точки привязки).
+              iconImageOffset: [-24, -24],
+              // Смещение слоя с содержимым относительно слоя с картинкой.
+              iconContentOffset: [15, 15],
+              // Макет содержимого.
+              iconContentLayout: MyIconContentLayout
+            });
+
+    myMap.geoObjects
+            .add(myPlacemark)
+            .add(myPlacemarkWithContent);
+  });
+
+</script>
 
 <!-- Submit - End -->
 <div id="map"></div>
